@@ -1,0 +1,11 @@
+{
+  "name": "mercado-libre-listing",
+  "version": "1.0.0",
+  "description": "Convert Amazon products to MercadoLibre listings",
+  "main": "index.js",
+  "type": "module",
+  "capabilities": ["amazon_scraping", "listing_generation", "excel_export"],
+  "parameters": {
+    "urls": { "type": "array", "description": "Amazon product URLs", "required": true }
+  }
+}
