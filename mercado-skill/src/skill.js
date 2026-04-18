@@ -59,25 +59,40 @@ export class MercadoLibreListingSkill {
     }
   }
 
-  async callECS(product) {
-    const res = await fetch(${ECS_API_BASE}/api/generate-listing, {
+  async run(urls) {
+    console.log(\n📦 开始处理  个产品...\n);
+    
+    const products = [];
+    
+    for (let i = 0; i < urls.length; i++) {
+      console.log([/] 抓取: ...);
+      try {
+        const product = await this.scrapeAmazon(urls[i]);
+        products.push(product);
+        console.log(   ✅ 成功: ...);
+      } catch (e) {
+        console.log(   ❌ 失败: );
+      }
+    }
+    
+    console.log(\n📡 发送到 ECS 生成 Excel...);
+    
+    const res = await fetch(${ECS_API_BASE}/api/batch, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: product.title, description: product.description })
+      body: JSON.stringify({ products })
     });
+    
     const data = await res.json();
-    return data.data;
-  }
-
-  async run(urls) {
-    const results = [];
-    for (const url of urls) {
-      console.log(处理: );
-      const product = await this.scrapeAmazon(url);
-      const listing = await this.callECS(product);
-      results.push({ ...product, listing });
+    
+    if (data.success) {
+      console.log(\n✅ 完成！);
+      console.log(   处理产品: /);
+      console.log(   下载链接: );
+      return data;
+    } else {
+      throw new Error(data.error);
     }
-    return { success: true, products: results };
   }
 
   async cleanup() {
